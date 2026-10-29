@@ -12,13 +12,16 @@ export class RTCController {
    */
   static async getToken(req: Request, res: Response): Promise<void> {
     try {
-      const { roomName, identity, name, canPublish, canSubscribe, canPublishData } = req.body;
+      const roomName = req.body.roomName || req.body.roomId;
+      const identity = req.body.identity || req.body.participantName;
+      const name = req.body.name || req.body.participantName || identity;
+      const { canPublish, canSubscribe, canPublishData } = req.body;
       const project = req.project!; // Attached by requireApiKey middleware
 
       if (!roomName || !identity) {
         res.status(400).json({
           success: false,
-          message: "roomName and identity are required parameters.",
+          message: "roomName (or roomId) and identity (or participantName) are required parameters.",
         });
         return;
       }
@@ -54,9 +57,14 @@ export class RTCController {
 
       res.status(200).json({
         success: true,
+        token,
+        wsUrl: ENV.LIVEKIT_URL,
+        serverUrl: ENV.LIVEKIT_URL,
+        roomName,
         data: {
           token,
           serverUrl: ENV.LIVEKIT_URL,
+          wsUrl: ENV.LIVEKIT_URL,
           roomName,
           identity,
           name: name || identity,
