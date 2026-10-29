@@ -1,0 +1,21 @@
+{
+  "name": "omnirtc-monorepo",
+  "version": "1.0.0",
+  "private": true,
+  "description": "OmniRTC - Next-Gen Real-Time Communication Cloud SaaS Platform",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev:api": "npm run dev --workspace=apps/api",
+    "dev:web": "npm run dev --workspace=apps/web",
+    "dev:livekit": "livekit-server --config ./livekit.yaml --dev",
+    "dev": "concurrently -n \"LIVEKIT,API,WEB\" -c \"magenta,cyan,blue\" \"npm run dev:livekit\" \"npm run dev:api\" \"npm run dev:web\"",
+    "build": "npm run build --workspaces",
+    "seed": "npx tsx scripts/seed-db.ts"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2"
+  }
+}

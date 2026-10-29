@@ -1,0 +1,35 @@
+# Dependencies
+node_modules
+*/node_modules
+*/*/node_modules
+
+# Next.js and build outputs
+.next
+*/.next
+*/*/.next
+dist
+build
+*.tsbuildinfo
+
+# Sensitive credentials & environment variables
+.env
+.env*.local
+*.env
+apps/*/.env
+apps/*/.env.local
+apps/*/.env.development
+apps/*/.env.production
+
+# Keep example env files for onboarding
+!.env.example
+!apps/*/.env.example
+
+# Logs & temp
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Operating System files
+.DS_Store
+Thumbs.db

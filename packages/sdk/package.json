@@ -1,0 +1,16 @@
+{
+  "name": "@omnirtc/sdk",
+  "version": "1.0.0",
+  "description": "OmniRTC Client SDK for Web & React - Seamless Video Calling Integration",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc"
+  },
+  "dependencies": {
+    "livekit-client": "^2.9.2"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.3"
+  }
+}

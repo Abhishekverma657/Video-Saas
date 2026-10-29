@@ -1,0 +1,17 @@
+port: 7880
+bind_addresses:
+  - ""
+rtc:
+  tcp_port: 7881
+  port_range_start: 50000
+  port_range_end: 60000
+  use_external_ip: false
+keys:
+  API_MASTER_KEY: SECRET_OMNIRTC_MASTER_KEY_2026
+webhook:
+  api_key: API_MASTER_KEY
+  urls:
+    - "http://127.0.0.1:5001/api/v1/webhooks/livekit"
+logging:
+  json: false
+  level: info

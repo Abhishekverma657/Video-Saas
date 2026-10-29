@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AuraRTC SDK - Standalone Developer Test App</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- LiveKit Client SDK via official CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/livekit-client/dist/livekit-client.umd.min.js"></script>
+</head>
+<body class="bg-slate-900 text-slate-100 min-h-screen p-4 sm:p-8 font-sans">
+  <div class="max-w-4xl mx-auto space-y-6">
+    <!-- Header -->
+    <div class="flex items-center justify-between border-b border-slate-800 pb-5">
+      <div>
+        <div className="flex items-center gap-2">
+          <span class="text-xs uppercase font-mono font-bold text-emerald-400 bg-emerald-500/10 px-2.5 py-0.5 rounded border border-emerald-500/20">
+            AuraRTC SDK Test Client
+          </span>
+        </div>
+        <h1 class="text-2xl font-bold text-white mt-1">Standalone Developer Sample App</h1>
+        <p class="text-xs text-slate-400">
+          This sample demonstrates how any 3rd-party developer uses their App ID & App Secret with the AuraRTC SDK.
+        </p>
+      </div>
+      <div id="connectionStatus" class="flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-800 border border-slate-700 text-xs text-slate-400 font-mono">
+        <span class="w-2 h-2 rounded-full bg-slate-500"></span>
+        <span>Disconnected</span>
+      </div>
+    </div>
+
+    <!-- Configuration Card -->
+    <div class="bg-slate-800/80 border border-slate-700 rounded-2xl p-5 space-y-4">
+      <h2 class="text-xs font-bold uppercase tracking-wider text-slate-400">1. Developer Credentials</h2>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div>
+          <label class="block text-xs font-semibold text-slate-300 mb-1">App ID</label>
+          <input id="appIdInput" type="text" value="app_omni_live_demo_01" class="w-full px-3 py-2 text-xs rounded-xl bg-slate-900 border border-slate-700 text-slate-100 font-mono focus:border-emerald-500 focus:outline-none" />
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-300 mb-1">App Secret</label>
+          <input id="appSecretInput" type="password" value="sec_omni_super_secret_key_99" class="w-full px-3 py-2 text-xs rounded-xl bg-slate-900 border border-slate-700 text-slate-100 font-mono focus:border-emerald-500 focus:outline-none" />
+        </div>
+      </div>
+
+      <h2 class="text-xs font-bold uppercase tracking-wider text-slate-400 pt-2">2. Room & Participant</h2>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div>
+          <label class="block text-xs font-semibold text-slate-300 mb-1">Room Name</label>
+          <input id="roomInput" type="text" value="sdk-demo-room" class="w-full px-3 py-2 text-xs rounded-xl bg-slate-900 border border-slate-700 text-slate-100 font-mono focus:border-emerald-500 focus:outline-none" />
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-300 mb-1">Your Name</label>
+          <input id="nameInput" type="text" value="Developer User" class="w-full px-3 py-2 text-xs rounded-xl bg-slate-900 border border-slate-700 text-slate-100 focus:border-emerald-500 focus:outline-none" />
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="pt-2 flex items-center gap-3">
+        <button id="joinBtn" onclick="handleJoin()" class="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs transition-colors flex items-center gap-2 shadow-lg shadow-emerald-600/20">
+          <span>Connect via SDK</span>
+        </button>
+        <button id="leaveBtn" onclick="handleLeave()" disabled class="px-4 py-2.5 rounded-xl bg-rose-600/20 text-rose-300 border border-rose-500/30 hover:bg-rose-600/30 font-semibold text-xs transition-colors disabled:opacity-40">
+          Disconnect
+        </button>
+        <button onclick="openSecondTab()" class="ml-auto px-4 py-2 rounded-xl bg-slate-700 hover:bg-slate-600 text-slate-200 text-xs font-mono transition-colors">
+          + Open 2nd Participant in New Tab
+        </button>
+      </div>
+    </div>
+
+    <!-- Video Grid -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <!-- Local Video Container -->
+      <div class="bg-slate-950 border border-slate-800 rounded-2xl p-4 flex flex-col items-center justify-center min-h-[260px] relative overflow-hidden">
+        <div class="absolute top-3 left-3 px-2 py-0.5 rounded bg-slate-800/90 text-[10px] font-mono text-emerald-400 z-10 border border-slate-700">
+          Local Feed (You)
+        </div>
+        <div id="localVideoWrapper" class="w-full h-full flex items-center justify-center">
+          <p id="localPlaceholder" class="text-xs text-slate-600 font-mono">Camera Off (Click Connect)</p>
+        </div>
+      </div>
+
+      <!-- Remote Video Container -->
+      <div class="bg-slate-950 border border-slate-800 rounded-2xl p-4 flex flex-col items-center justify-center min-h-[260px] relative overflow-hidden">
+        <div class="absolute top-3 left-3 px-2 py-0.5 rounded bg-slate-800/90 text-[10px] font-mono text-teal-400 z-10 border border-slate-700">
+          Remote Participants
+        </div>
+        <div id="remoteVideoWrapper" class="w-full h-full flex items-center justify-center">
+          <p id="remotePlaceholder" class="text-xs text-slate-600 font-mono">Waiting for 2nd participant...</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Live Event Log -->
+    <div class="bg-slate-950 border border-slate-800 rounded-2xl p-4 space-y-2">
+      <div class="flex items-center justify-between text-xs text-slate-400">
+        <span class="font-mono font-bold uppercase tracking-wider text-emerald-400">SDK Diagnostics Log</span>
+        <button onclick="clearLogs()" class="text-[11px] text-slate-500 hover:text-slate-300">Clear</button>
+      </div>
+      <div id="logs" class="bg-black/60 rounded-xl p-3 font-mono text-[11px] text-slate-300 h-36 overflow-y-auto space-y-1">
+        <div class="text-slate-500">[System] Ready to test AuraRTC SDK. Click "Connect via SDK" above.</div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let currentRoom = null;
+
+    function log(msg, type = "info") {
+      const logs = document.getElementById("logs");
+      const div = document.createElement("div");
+      const timestamp = new Date().toLocaleTimeString();
+      let color = "text-slate-300";
+      if (type === "success") color = "text-emerald-400 font-bold";
+      if (type === "error") color = "text-rose-400 font-bold";
+      if (type === "warning") color = "text-amber-400";
+      div.className = color;
+      div.innerText = `[${timestamp}] ${msg}`;
+      logs.appendChild(div);
+      logs.scrollTop = logs.scrollHeight;
+    }
+
+    function clearLogs() {
+      document.getElementById("logs").innerHTML = "";
+    }
+
+    function openSecondTab() {
+      const room = document.getElementById("roomInput").value;
+      const appId = document.getElementById("appIdInput").value;
+      const appSecret = document.getElementById("appSecretInput").value;
+      window.open(window.location.href, "_blank");
+    }
+
+    async function handleJoin() {
+      const appId = document.getElementById("appIdInput").value.trim();
+      const appSecret = document.getElementById("appSecretInput").value.trim();
+      const roomName = document.getElementById("roomInput").value.trim();
+      const userName = document.getElementById("nameInput").value.trim();
+
+      if (!appId || !appSecret || !roomName) {
+        alert("Please provide App ID, App Secret, and Room Name.");
+        return;
+      }
+
+      document.getElementById("joinBtn").disabled = true;
+      log(`[SDK Step 1] Validating App ID & Secret credentials...`);
+
+      try {
+        // Step 1: Exchange App ID & Secret for signed LiveKit WebRTC Access Token
+        log(`[SDK Step 2] Calling AuraRTC Gateway: POST http://localhost:5001/api/v1/rtc/token...`);
+        const tokenRes = await fetch("http://localhost:5001/api/v1/rtc/token", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "x-app-id": appId,
+            "x-app-secret": appSecret
+          },
+          body: JSON.stringify({
+            roomName: roomName,
+            identity: `dev_${Math.random().toString(36).substring(2, 6)}`,
+            name: userName
+          })
+        });
+
+        const tokenData = await tokenRes.json();
+        if (!tokenRes.ok || !tokenData.success) {
+          throw new Error(tokenData.message || "Failed to exchange credentials for WebRTC token.");
+        }
+
+        const token = tokenData.data.token;
+        const serverUrl = tokenData.data.serverUrl || "wss://video-call-ab51jqvu.livekit.cloud";
+        log(`[SDK Step 2] Token successfully issued by Gateway! (Target: ${serverUrl})`, "success");
+
+        // Step 2: Initialize LiveKit Room instance
+        log(`[SDK Step 3] Connecting to SFU WebSocket: ${serverUrl}...`);
+        const room = new LivekitClient.Room({
+          adaptiveStream: true,
+          dynacast: true,
+          videoCaptureDefaults: {
+            resolution: LivekitClient.VideoPresets.h720.resolution
+          }
+        });
+
+        // Set up event handlers
+        room.on(LivekitClient.RoomEvent.ParticipantConnected, (participant) => {
+          log(`[Room Event] New participant joined: ${participant.name || participant.identity}`, "warning");
+        });
+
+        room.on(LivekitClient.RoomEvent.TrackSubscribed, (track, publication, participant) => {
+          log(`[Room Event] Subscribed to remote ${track.kind} track from ${participant.name || participant.identity}`, "success");
+          if (track.kind === "video") {
+            const el = track.attach();
+            el.className = "w-full h-full object-cover rounded-xl";
+            const wrapper = document.getElementById("remoteVideoWrapper");
+            wrapper.innerHTML = "";
+            wrapper.appendChild(el);
+          }
+        });
+
+        room.on(LivekitClient.RoomEvent.Disconnected, () => {
+          log(`[Room Event] Disconnected from room.`, "warning");
+          updateStatus(false);
+        });
+
+        // Step 3: Connect to LiveKit Room
+        await room.connect(serverUrl, token);
+        currentRoom = room;
+        log(`[SDK Step 4] Room Connected! Room Name: "${room.name}".`, "success");
+
+        // Step 4: Publish local Camera and Microphone
+        log(`[SDK Step 5] Enabling local camera & microphone tracks...`);
+        await room.localParticipant.enableCameraAndMicrophone();
+        log(`[SDK Step 5] Camera and Mic successfully published to SFU!`, "success");
+
+        // Render local video preview
+        const localTrackPub = Array.from(room.localParticipant.videoTrackPublications.values())[0];
+        if (localTrackPub && localTrackPub.track) {
+          const localEl = localTrackPub.track.attach();
+          localEl.className = "w-full h-full object-cover rounded-xl";
+          const wrapper = document.getElementById("localVideoWrapper");
+          wrapper.innerHTML = "";
+          wrapper.appendChild(localEl);
+        }
+
+        updateStatus(true);
+      } catch (err) {
+        log(`[SDK Error] ${err.message}`, "error");
+        document.getElementById("joinBtn").disabled = false;
+        alert(`SDK Error: ${err.message}`);
+      }
+    }
+
+    async function handleLeave() {
+      if (currentRoom) {
+        log(`Disconnecting from room...`);
+        await currentRoom.disconnect();
+        currentRoom = null;
+      }
+      document.getElementById("localVideoWrapper").innerHTML = '<p id="localPlaceholder" class="text-xs text-slate-600 font-mono">Camera Off (Click Connect)</p>';
+      document.getElementById("remoteVideoWrapper").innerHTML = '<p id="remotePlaceholder" class="text-xs text-slate-600 font-mono">Waiting for 2nd participant...</p>';
+      updateStatus(false);
+    }
+
+    function updateStatus(connected) {
+      const status = document.getElementById("connectionStatus");
+      const joinBtn = document.getElementById("joinBtn");
+      const leaveBtn = document.getElementById("leaveBtn");
+
+      if (connected) {
+        status.className = "flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-xs text-emerald-400 font-mono";
+        status.innerHTML = '<span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span><span>Connected to SFU</span>';
+        joinBtn.disabled = true;
+        leaveBtn.disabled = false;
+      } else {
+        status.className = "flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-800 border border-slate-700 text-xs text-slate-400 font-mono";
+        status.innerHTML = '<span class="w-2 h-2 rounded-full bg-slate-500"></span><span>Disconnected</span>';
+        joinBtn.disabled = false;
+        leaveBtn.disabled = true;
+      }
+    }
+  </script>
+</body>
+</html>
