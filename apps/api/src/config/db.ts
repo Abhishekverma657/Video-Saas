@@ -10,7 +10,7 @@ export const connectDB = async (): Promise<void> => {
   try {
     const conn = await mongoose.connect(ENV.MONGODB_URI, {
       serverSelectionTimeoutMS: 5000,
-    });
+    } as any);
     console.log(`✅ MongoDB Connected Successfully: ${conn.connection.host}`);
   } catch (error) {
     console.error("❌ MongoDB Connection Error:", error);

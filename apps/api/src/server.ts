@@ -24,8 +24,8 @@ app.use(
 // Capture rawBody for Webhook signature verification
 app.use(
   express.json({
-    verify: (req: any, _res, buf) => {
-      req.rawBody = buf.toString();
+    verify: (req: any, _res: any, buf: any) => {
+      req.rawBody = buf ? buf.toString() : "";
     },
   })
 );
