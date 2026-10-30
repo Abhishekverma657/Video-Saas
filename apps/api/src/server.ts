@@ -1,6 +1,7 @@
 import express, { Request, Response } from "express";
 import cors from "cors";
 import morgan from "morgan";
+import mongoose from "mongoose";
 import { connectDB } from "./config/db.js";
 import { ENV } from "./config/env.js";
 import { seedSuperAdmin } from "./utils/seed.js";
@@ -35,11 +36,15 @@ app.use(morgan("dev"));
 
 // Health Check
 app.get("/health", (_req: Request, res: Response) => {
+  const states = ["disconnected", "connected", "connecting", "disconnecting"];
+  const mongoState = states[mongoose.connection.readyState] || "unknown";
+
   res.status(200).json({
     status: "ok",
     service: "OmniRTC API Gateway & Metering Engine",
     time: new Date().toISOString(),
     livekitUrl: ENV.LIVEKIT_URL,
+    mongoConnection: mongoState,
   });
 });
 
