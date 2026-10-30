@@ -37,8 +37,7 @@ type DocSection =
   | "node"
   | "customize"
   | "token-bench"
-  | "api"
-  | "free-hosting";
+  | "api";
 
 function DocsContent() {
   const searchParams = useSearchParams();
@@ -57,7 +56,6 @@ function DocsContent() {
         "customize",
         "token-bench",
         "api",
-        "free-hosting",
       ].includes(section)
     ) {
       setActiveSection(section);
@@ -257,18 +255,6 @@ function DocsContent() {
             >
               <Code2 className="w-4 h-4 text-emerald-600" />
               <span>REST API Reference</span>
-            </button>
-
-            <button
-              onClick={() => setActiveSection("free-hosting")}
-              className={`w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-xs font-semibold transition-all text-left ${
-                activeSection === "free-hosting"
-                  ? "bg-emerald-50 text-emerald-800 font-bold border border-emerald-200 shadow-sm"
-                  : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
-              }`}
-            >
-              <Cloud className="w-4 h-4 text-teal-600" />
-              <span>100% Free Hosting (No Card)</span>
             </button>
           </div>
 
@@ -1372,47 +1358,6 @@ Widget buildParticipantGrid(List<Participant> participants) {
             </div>
           )}
 
-          {/* ============================================================= */}
-          {/* 7. 100% FREE HOSTING (NO CARD REQUIRED) */}
-          {/* ============================================================= */}
-          {activeSection === "free-hosting" && (
-            <div className="space-y-8">
-              <div className="bg-white border border-slate-200/80 rounded-3xl p-6 sm:p-8 shadow-sm space-y-3">
-                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 text-emerald-800 text-xs font-semibold border border-emerald-200">
-                  <Cloud className="w-3.5 h-3.5 text-emerald-600" />
-                  <span>100% Free • Zero Credit Card Needed</span>
-                </div>
-                <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight">
-                  Deploy AuraRTC SaaS 100% Free (No Credit Card Ever)
-                </h2>
-                <p className="text-xs sm:text-sm text-slate-600 leading-relaxed max-w-3xl">
-                  Here is the verified <strong>Zero Credit Card Stack</strong> to host your entire video calling platform 100% free forever.
-                </p>
-              </div>
-
-              <div className="bg-white border border-slate-200/80 rounded-2xl p-6 shadow-sm space-y-3">
-                <h4 className="font-bold text-sm text-slate-900">The 4 Zero-Card Production Building Blocks:</h4>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
-                  <div className="p-4 rounded-xl bg-slate-50 border border-slate-200/80 space-y-1">
-                    <span className="text-xs font-bold text-slate-900">1. Database: MongoDB Atlas (M0 Tier)</span>
-                    <p className="text-xs text-slate-600">512MB storage, automated daily backups, free forever without entering any card info.</p>
-                  </div>
-                  <div className="p-4 rounded-xl bg-slate-50 border border-slate-200/80 space-y-1">
-                    <span className="text-xs font-bold text-slate-900">2. Backend API: Render.com</span>
-                    <p className="text-xs text-slate-600">750 free hours/month, automatic HTTPS, connects to this GitHub repository directly.</p>
-                  </div>
-                  <div className="p-4 rounded-xl bg-slate-50 border border-slate-200/80 space-y-1">
-                    <span className="text-xs font-bold text-slate-900">3. Media SFU: LiveKit Cloud Free Tier</span>
-                    <p className="text-xs text-slate-600">Sign in with GitHub. 50 GB monthly bandwidth, up to 100 concurrent callers, zero card needed.</p>
-                  </div>
-                  <div className="p-4 rounded-xl bg-slate-50 border border-slate-200/80 space-y-1">
-                    <span className="text-xs font-bold text-slate-900">4. Web App: Vercel</span>
-                    <p className="text-xs text-slate-600">Automatic Next.js CI/CD, global edge CDN, unlimited deployments without card.</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
         </main>
       </div>
     </div>
