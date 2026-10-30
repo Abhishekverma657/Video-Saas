@@ -10,6 +10,7 @@ import projectRoutes from "./routes/project.routes.js";
 import rtcRoutes from "./routes/rtc.routes.js";
 import webhookRoutes from "./routes/webhook.routes.js";
 import adminRoutes from "./routes/admin.routes.js";
+import phoneRoutes from "./routes/phone.routes.js";
 
 const app = express();
 
@@ -48,6 +49,7 @@ app.use("/api/v1/projects", projectRoutes);
 app.use("/api/v1/rtc", rtcRoutes);
 app.use("/api/v1/webhooks", webhookRoutes);
 app.use("/api/v1/admin", adminRoutes);
+app.use("/api/v1/phone", phoneRoutes);
 
 // Error Handling Middleware
 app.use((err: any, _req: Request, res: Response, _next: any) => {
