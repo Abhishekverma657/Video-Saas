@@ -28,6 +28,42 @@ export default function DocsPage() {
   >("flutter");
   const [copiedKey, setCopiedKey] = useState<string | null>(null);
 
+  // Live Token Testing Bench State
+  const [testAppId, setTestAppId] = useState("app_omni_live_demo_01");
+  const [testAppSecret, setTestAppSecret] = useState("sec_omni_super_secret_key_99");
+  const [testRoom, setTestRoom] = useState("flutter-room-101");
+  const [testUser, setTestUser] = useState("Developer");
+  const [isTestingToken, setIsTestingToken] = useState(false);
+  const [testResult, setTestResult] = useState<any>(null);
+  const [testError, setTestError] = useState<string | null>(null);
+
+  const handleTestToken = async () => {
+    setIsTestingToken(true);
+    setTestError(null);
+    setTestResult(null);
+    try {
+      const res = await fetch("https://video-saas-1-2ldd.onrender.com/api/v1/rtc/token", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          appId: testAppId.trim(),
+          appSecret: testAppSecret.trim(),
+          roomId: testRoom.trim(),
+          participantName: testUser.trim(),
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok || !data.success) {
+        throw new Error(data.message || `HTTP ${res.status}`);
+      }
+      setTestResult(data);
+    } catch (err: any) {
+      setTestError(err.message || "Failed to generate token");
+    } finally {
+      setIsTestingToken(false);
+    }
+  };
+
   const copyCode = (key: string, text: string) => {
     navigator.clipboard.writeText(text);
     setCopiedKey(key);
@@ -35,9 +71,9 @@ export default function DocsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#fbfcfd] text-slate-900">
+    <div className="min-h-screen bg-[#fbfcfd] text-slate-900 pt-20">
       {/* Top Docs Banner */}
-      <div className="border-b border-slate-200/80 bg-white/70 backdrop-blur-md sticky top-16 z-30">
+      <div className="border-b border-slate-200/80 bg-white/80 backdrop-blur-md sticky top-20 z-30">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="flex items-center gap-3">
             <div className="w-9 h-9 rounded-xl bg-emerald-600 text-white flex items-center justify-center shadow-md shadow-emerald-600/20">
@@ -875,8 +911,106 @@ app.listen(3000, () => console.log("Server listening on port 3000"));`}</code>
                   AuraRTC Gateway REST API
                 </h2>
                 <p className="text-xs sm:text-sm text-slate-600 leading-relaxed max-w-3xl">
-                  Authenticate requests via HTTP headers: <code className="font-mono bg-slate-100 px-1.5 py-0.5 rounded text-slate-800">x-app-id</code> and <code className="font-mono bg-slate-100 px-1.5 py-0.5 rounded text-slate-800">x-app-secret</code>.
+                  Authenticate requests via HTTP headers: <code className="font-mono bg-slate-100 px-1.5 py-0.5 rounded text-slate-800">x-app-id</code> and <code className="font-mono bg-slate-100 px-1.5 py-0.5 rounded text-slate-800">x-app-secret</code> (or in request body).
                 </p>
+              </div>
+
+              {/* Interactive Token Generator Console */}
+              <div className="bg-slate-900 border border-slate-800 rounded-3xl p-6 text-white shadow-xl space-y-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <div className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse" />
+                    <span className="font-bold text-sm text-emerald-400">Interactive Live API Console</span>
+                  </div>
+                  <span className="text-[10px] font-mono text-slate-400">Connected to Live Render Gateway</span>
+                </div>
+                <p className="text-xs text-slate-400">
+                  Test your real App credentials or use our pre-filled live demo credentials to generate a valid WebRTC token in 1 click:
+                </p>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                  <div>
+                    <label className="text-[11px] text-slate-400 font-mono">App ID</label>
+                    <input
+                      type="text"
+                      value={testAppId}
+                      onChange={(e) => setTestAppId(e.target.value)}
+                      className="w-full mt-1 px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 font-mono text-emerald-400 focus:outline-none focus:border-emerald-500"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-[11px] text-slate-400 font-mono">App Secret</label>
+                    <input
+                      type="password"
+                      value={testAppSecret}
+                      onChange={(e) => setTestAppSecret(e.target.value)}
+                      className="w-full mt-1 px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 font-mono text-emerald-400 focus:outline-none focus:border-emerald-500"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-[11px] text-slate-400 font-mono">Room Name / ID</label>
+                    <input
+                      type="text"
+                      value={testRoom}
+                      onChange={(e) => setTestRoom(e.target.value)}
+                      className="w-full mt-1 px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 font-mono text-slate-200 focus:outline-none focus:border-emerald-500"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-[11px] text-slate-400 font-mono">Participant Name</label>
+                    <input
+                      type="text"
+                      value={testUser}
+                      onChange={(e) => setTestUser(e.target.value)}
+                      className="w-full mt-1 px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 font-mono text-slate-200 focus:outline-none focus:border-emerald-500"
+                    />
+                  </div>
+                </div>
+
+                <button
+                  onClick={handleTestToken}
+                  disabled={isTestingToken}
+                  className="w-full py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs transition-colors flex items-center justify-center gap-2 shadow-lg disabled:opacity-50"
+                >
+                  {isTestingToken ? (
+                    <>
+                      <div className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                      <span>Minting Signed LiveKit Token...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Zap className="w-3.5 h-3.5 text-amber-300" />
+                      <span>Execute POST /api/v1/rtc/token</span>
+                    </>
+                  )}
+                </button>
+
+                {testError && (
+                  <div className="p-3 rounded-xl bg-red-950/60 border border-red-800 text-red-300 text-xs font-mono">
+                    ❌ Error: {testError}
+                  </div>
+                )}
+
+                {testResult && (
+                  <div className="p-4 rounded-xl bg-slate-950 border border-emerald-900 text-xs font-mono space-y-2">
+                    <div className="flex items-center justify-between text-emerald-400 font-bold">
+                      <span>HTTP 200 OK — Token Generated Successfully!</span>
+                      <button
+                        onClick={() => copyCode("test-token", testResult.token)}
+                        className="text-[10px] bg-slate-800 px-2 py-1 rounded hover:bg-slate-700 text-white flex items-center gap-1"
+                      >
+                        {copiedKey === "test-token" ? <Check className="w-3 h-3 text-emerald-400" /> : <Copy className="w-3 h-3" />}
+                        <span>Copy JWT</span>
+                      </button>
+                    </div>
+                    <div className="text-[11px] text-slate-400 break-all bg-slate-900/80 p-2.5 rounded-lg max-h-24 overflow-y-auto">
+                      {testResult.token}
+                    </div>
+                    <div className="text-[11px] text-slate-400">
+                      WebSocket Server URL: <span className="text-emerald-400">{testResult.wsUrl || testResult.serverUrl}</span>
+                    </div>
+                  </div>
+                )}
               </div>
 
               {/* Endpoint 1 */}
