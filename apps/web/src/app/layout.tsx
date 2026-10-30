@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "@livekit/components-styles";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
 import { AuthProvider } from "@/context/AuthContext";
 
 export const metadata: Metadata = {
@@ -20,6 +21,7 @@ export default function RootLayout({
         <AuthProvider>
           <Navbar />
           <main className="flex-1">{children}</main>
+          <Footer />
         </AuthProvider>
       </body>
     </html>

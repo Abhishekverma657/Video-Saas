@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, Suspense } from "react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import {
   BookOpen,
   Smartphone,
@@ -20,13 +21,48 @@ import {
   Info,
   Radio,
   Cpu,
+  Sliders,
+  Play,
+  Layers,
+  Sparkles,
+  Palette,
+  Volume2,
+  Lock,
 } from "lucide-react";
 
-export default function DocsPage() {
-  const [activeSection, setActiveSection] = useState<
-    "flutter" | "react" | "node" | "api" | "free-hosting"
-  >("flutter");
+type DocSection =
+  | "quickstart"
+  | "flutter"
+  | "react"
+  | "node"
+  | "customize"
+  | "token-bench"
+  | "api"
+  | "free-hosting";
+
+function DocsContent() {
+  const searchParams = useSearchParams();
+  const [activeSection, setActiveSection] = useState<DocSection>("quickstart");
   const [copiedKey, setCopiedKey] = useState<string | null>(null);
+
+  useEffect(() => {
+    const section = searchParams.get("section") as DocSection;
+    if (
+      section &&
+      [
+        "quickstart",
+        "flutter",
+        "react",
+        "node",
+        "customize",
+        "token-bench",
+        "api",
+        "free-hosting",
+      ].includes(section)
+    ) {
+      setActiveSection(section);
+    }
+  }, [searchParams]);
 
   // Live Token Testing Bench State
   const [testAppId, setTestAppId] = useState("app_omni_live_demo_01");
@@ -89,17 +125,24 @@ export default function DocsPage() {
                 </span>
               </div>
               <p className="text-xs text-slate-500">
-                End-to-end integration guides, SDK source code, and zero-cost hosting setup.
+                Line-by-line SDK tutorials, UI customization guides, and interactive token playground.
               </p>
             </div>
           </div>
 
           <div className="flex items-center gap-3">
+            <button
+              onClick={() => setActiveSection("token-bench")}
+              className="px-3.5 py-1.5 text-xs font-bold text-emerald-800 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 rounded-xl transition-all shadow-xs flex items-center gap-1.5"
+            >
+              <Zap className="w-3.5 h-3.5 text-emerald-600" />
+              <span>Token Playground</span>
+            </button>
             <Link
               href="/dashboard"
               className="px-3.5 py-1.5 text-xs font-semibold text-white bg-slate-900 hover:bg-slate-800 rounded-xl transition-all shadow-sm flex items-center gap-1.5"
             >
-              <span>Get Your API Keys</span>
+              <span>Get API Keys</span>
               <ChevronRight className="w-3.5 h-3.5" />
             </Link>
           </div>
@@ -112,7 +155,23 @@ export default function DocsPage() {
         <aside className="lg:col-span-3 space-y-6">
           <div className="bg-white border border-slate-200/80 rounded-2xl p-4 shadow-sm space-y-1">
             <div className="text-[11px] font-bold text-slate-400 uppercase tracking-wider px-3 py-2">
-              Integration Guides
+              Getting Started
+            </div>
+
+            <button
+              onClick={() => setActiveSection("quickstart")}
+              className={`w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-xs font-semibold transition-all text-left ${
+                activeSection === "quickstart"
+                  ? "bg-emerald-50 text-emerald-800 font-bold border border-emerald-200 shadow-sm"
+                  : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+              }`}
+            >
+              <Layers className="w-4 h-4 text-emerald-600" />
+              <span>Architecture & Concepts</span>
+            </button>
+
+            <div className="pt-2 text-[11px] font-bold text-slate-400 uppercase tracking-wider px-3 py-2">
+              Client & Backend SDKs
             </div>
 
             <button
@@ -151,6 +210,43 @@ export default function DocsPage() {
               <span>Node.js Backend Gateway</span>
             </button>
 
+            <div className="pt-2 text-[11px] font-bold text-slate-400 uppercase tracking-wider px-3 py-2">
+              Customization & Theming
+            </div>
+
+            <button
+              onClick={() => setActiveSection("customize")}
+              className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-semibold transition-all text-left ${
+                activeSection === "customize"
+                  ? "bg-emerald-50 text-emerald-800 font-bold border border-emerald-200 shadow-sm"
+                  : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+              }`}
+            >
+              <div className="flex items-center gap-2.5">
+                <Palette className="w-4 h-4 text-indigo-600" />
+                <span>UI Theming & Customization</span>
+              </div>
+              <span className="px-1.5 py-0.2 text-[9px] bg-indigo-100 text-indigo-800 rounded font-bold font-mono">
+                Guide
+              </span>
+            </button>
+
+            <div className="pt-2 text-[11px] font-bold text-slate-400 uppercase tracking-wider px-3 py-2">
+              Testing & API
+            </div>
+
+            <button
+              onClick={() => setActiveSection("token-bench")}
+              className={`w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-xs font-semibold transition-all text-left ${
+                activeSection === "token-bench"
+                  ? "bg-emerald-50 text-emerald-800 font-bold border border-emerald-200 shadow-sm"
+                  : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+              }`}
+            >
+              <Zap className="w-4 h-4 text-amber-500" />
+              <span>Interactive Token Playground</span>
+            </button>
+
             <button
               onClick={() => setActiveSection("api")}
               className={`w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-xs font-semibold transition-all text-left ${
@@ -162,12 +258,6 @@ export default function DocsPage() {
               <Code2 className="w-4 h-4 text-emerald-600" />
               <span>REST API Reference</span>
             </button>
-
-            <div className="pt-3 pb-1">
-              <div className="text-[11px] font-bold text-slate-400 uppercase tracking-wider px-3 py-2">
-                Deployment & Infra
-              </div>
-            </div>
 
             <button
               onClick={() => setActiveSection("free-hosting")}
@@ -183,13 +273,13 @@ export default function DocsPage() {
           </div>
 
           {/* Quick Help Card */}
-          <div className="bg-slate-900 text-slate-100 rounded-2xl p-4 space-y-2.5 text-xs">
+          <div className="bg-slate-900 text-slate-100 rounded-2xl p-4 space-y-2.5 text-xs shadow-md">
             <div className="flex items-center gap-2 text-emerald-400 font-bold">
               <Zap className="w-4 h-4" />
               <span>Need API Credentials?</span>
             </div>
             <p className="text-slate-400 text-[11px] leading-relaxed">
-              Sign up in 30 seconds to generate your <code className="text-slate-200 font-mono">App ID</code>, <code className="text-slate-200 font-mono">App Secret</code>, and 10,000 free starter minutes.
+              Sign up to receive your instant <code className="text-slate-200 font-mono">App ID</code>, <code className="text-slate-200 font-mono">App Secret</code>, and 1,000 monthly minutes.
             </p>
             <Link
               href="/register"
@@ -203,6 +293,81 @@ export default function DocsPage() {
         {/* Right Content Area */}
         <main className="lg:col-span-9 space-y-8">
           {/* ============================================================= */}
+          {/* 0. QUICKSTART & ARCHITECTURE */}
+          {/* ============================================================= */}
+          {activeSection === "quickstart" && (
+            <div className="space-y-8">
+              <div className="bg-white border border-slate-200/80 rounded-3xl p-6 sm:p-8 shadow-sm space-y-3">
+                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 text-emerald-800 text-xs font-semibold border border-emerald-200">
+                  <Layers className="w-3.5 h-3.5 text-emerald-600" />
+                  <span>Platform Architecture</span>
+                </div>
+                <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight">
+                  How AuraRTC Video Calling Works
+                </h2>
+                <p className="text-xs sm:text-sm text-slate-600 leading-relaxed max-w-3xl">
+                  Unlike peer-to-peer WebRTC where participants send video directly to each other (overloading mobile CPU after 3 users), AuraRTC uses a high-performance **Selective Forwarding Unit (SFU)** mesh.
+                </p>
+              </div>
+
+              {/* 3-Step Flow Diagram */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="bg-white border border-slate-200/80 rounded-2xl p-5 shadow-xs space-y-2">
+                  <div className="w-8 h-8 rounded-xl bg-emerald-100 text-emerald-800 font-bold flex items-center justify-center text-sm font-mono">
+                    1
+                  </div>
+                  <h3 className="font-bold text-sm text-slate-900">Client Requests Call</h3>
+                  <p className="text-xs text-slate-600 leading-relaxed">
+                    Flutter app or Web client asks your backend: <em>"I want to join Room: meeting_101 with Name: Alice"</em>.
+                  </p>
+                </div>
+
+                <div className="bg-white border border-slate-200/80 rounded-2xl p-5 shadow-xs space-y-2">
+                  <div className="w-8 h-8 rounded-xl bg-teal-100 text-teal-800 font-bold flex items-center justify-center text-sm font-mono">
+                    2
+                  </div>
+                  <h3 className="font-bold text-sm text-slate-900">Backend Mints JWT Token</h3>
+                  <p className="text-xs text-slate-600 leading-relaxed">
+                    Your Node.js API uses your <code className="font-mono text-emerald-700">App Secret</code> to sign a secure WebRTC JWT token with room permissions.
+                  </p>
+                </div>
+
+                <div className="bg-white border border-slate-200/80 rounded-2xl p-5 shadow-xs space-y-2">
+                  <div className="w-8 h-8 rounded-xl bg-indigo-100 text-indigo-800 font-bold flex items-center justify-center text-sm font-mono">
+                    3
+                  </div>
+                  <h3 className="font-bold text-sm text-slate-900">Direct SFU Connection</h3>
+                  <p className="text-xs text-slate-600 leading-relaxed">
+                    Client passes JWT to LiveKit Cloud (<code className="font-mono text-[11px]">wss://...</code>). Video tracks immediately connect with sub-150ms latency!
+                  </p>
+                </div>
+              </div>
+
+              {/* Next step CTA */}
+              <div className="flex items-center justify-between p-6 rounded-2xl bg-slate-900 text-white">
+                <div className="space-y-1">
+                  <h4 className="font-bold text-sm">Ready to build your client app?</h4>
+                  <p className="text-xs text-slate-400">Choose your preferred framework below to see step-by-step code.</p>
+                </div>
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => setActiveSection("flutter")}
+                    className="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition-colors"
+                  >
+                    Flutter Guide →
+                  </button>
+                  <button
+                    onClick={() => setActiveSection("react")}
+                    className="px-4 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-bold transition-colors"
+                  >
+                    React Guide →
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* ============================================================= */}
           {/* 1. FLUTTER INTEGRATION GUIDE */}
           {/* ============================================================= */}
           {activeSection === "flutter" && (
@@ -214,33 +379,11 @@ export default function DocsPage() {
                   <span>Cross-Platform Mobile</span>
                 </div>
                 <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight">
-                  Flutter SDK Integration Guide
+                  Flutter SDK Integration Guide (Android & iOS)
                 </h2>
                 <p className="text-xs sm:text-sm text-slate-600 leading-relaxed max-w-3xl">
-                  Build 1-on-1 private calls or multi-user video meetings in Flutter for Android and iOS using the native LiveKit WebRTC engine. Below is the complete step-by-step setup.
+                  Build 1-on-1 private video calls or multi-user conference meetings in Flutter using the official <code className="font-mono text-emerald-700 font-bold">livekit_client</code> package.
                 </p>
-              </div>
-
-              {/* Calling Concept Overview */}
-              <div className="bg-white border border-slate-200/80 rounded-2xl p-6 shadow-sm space-y-4">
-                <h3 className="text-base font-bold text-slate-900 flex items-center gap-2">
-                  <Info className="w-4 h-4 text-emerald-600" />
-                  Understanding Call Architecture: Who Calls Whom?
-                </h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-1">
-                  <div className="p-4 rounded-xl bg-slate-50 border border-slate-200/80 space-y-1.5">
-                    <span className="text-xs font-bold text-slate-900">Pattern 1: Room-Based Calling</span>
-                    <p className="text-xs text-slate-600 leading-relaxed">
-                      Both participants join the same <code className="font-mono bg-white px-1 border rounded">roomName</code> (e.g. <code className="font-mono">"meeting_101"</code>). The AuraRTC SFU handles media bridging automatically. Perfect for scheduled meetings or group calls.
-                    </p>
-                  </div>
-                  <div className="p-4 rounded-xl bg-slate-50 border border-slate-200/80 space-y-1.5">
-                    <span className="text-xs font-bold text-slate-900">Pattern 2: 1-on-1 Direct Dialing</span>
-                    <p className="text-xs text-slate-600 leading-relaxed">
-                      User A initiates a call ➔ Generates a unique Room ID (e.g. <code className="font-mono">"call_alice_bob"</code>) ➔ Sends push notification via Firebase Cloud Messaging (FCM) to User B ➔ User B clicks "Accept" and joins that same Room ID.
-                    </p>
-                  </div>
-                </div>
               </div>
 
               {/* Step 1: Dependencies */}
@@ -258,7 +401,8 @@ export default function DocsPage() {
   flutter:
     sdk: flutter
   http: ^1.2.0           # For exchanging AppID & Secret for WebRTC room token
-  livekit_client: ^2.4.0 # High-performance WebRTC video/audio client`
+  livekit_client: ^2.4.0 # High-performance WebRTC video/audio client
+  permission_handler: ^11.3.1 # For requesting camera & mic permissions`
                       )
                     }
                     className="p-1.5 rounded-lg border border-slate-200 hover:bg-slate-50 text-slate-600 text-xs flex items-center gap-1"
@@ -277,7 +421,8 @@ export default function DocsPage() {
   flutter:
     sdk: flutter
   http: ^1.2.0           # For exchanging AppID & Secret for WebRTC room token
-  livekit_client: ^2.4.0 # High-performance WebRTC video/audio client`}</code>
+  livekit_client: ^2.4.0 # High-performance WebRTC video/audio client
+  permission_handler: ^11.3.1 # For requesting camera & mic permissions`}</code>
                   </pre>
                 </div>
               </div>
@@ -288,7 +433,7 @@ export default function DocsPage() {
                   <span className="text-xs font-bold text-emerald-600 uppercase font-mono">Step 2</span>
                   <h3 className="text-base font-bold text-slate-900">Configure Platform Permissions</h3>
                   <p className="text-xs text-slate-500 mt-0.5">
-                    Required for accessing hardware camera, microphone, and internet streaming.
+                    Required for hardware camera, microphone, and internet streaming.
                   </p>
                 </div>
 
@@ -298,6 +443,7 @@ export default function DocsPage() {
                     <pre>
                       <code>{`<uses-permission android:name="android.permission.CAMERA" />
 <uses-permission android:name="android.permission.RECORD_AUDIO" />
+<uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
 <uses-permission android:name="android.permission.INTERNET" />`}</code>
                     </pre>
                   </div>
@@ -329,8 +475,8 @@ export default function DocsPage() {
 import 'package:http/http.dart' as http;
 
 class AuraRTCService {
-  // Use http://10.0.2.2:5001 for Android Emulator or your public server domain
-  static const String apiUrl = "http://localhost:5001/api/v1/rtc/token";
+  // Use public Render backend or localhost:5001 (10.0.2.2 for Android Emulator)
+  static const String apiUrl = "https://video-saas-1-2ldd.onrender.com/api/v1/rtc/token";
   static const String appId = "YOUR_APP_ID";
   static const String appSecret = "YOUR_APP_SECRET";
 
@@ -342,24 +488,23 @@ class AuraRTCService {
       Uri.parse(apiUrl),
       headers: {
         "Content-Type": "application/json",
-        "x-app-id": appId,
-        "x-app-secret": appSecret,
       },
       body: jsonEncode({
-        "roomName": roomName,
-        "identity": "user_\${DateTime.now().millisecondsSinceEpoch}",
-        "name": userName,
+        "appId": appId,
+        "appSecret": appSecret,
+        "roomId": roomName,
+        "participantName": userName,
       }),
     );
 
-    final data = jsonDecode(response.body);
-    if (data['success'] == true) {
+    if (response.statusCode == 200) {
+      final json = jsonDecode(response.body);
       return {
-        "token": data['data']['token'],
-        "serverUrl": data['data']['serverUrl'],
+        "token": json["data"]["token"],
+        "serverUrl": json["data"]["serverUrl"],
       };
     } else {
-      throw Exception(data['message'] ?? "Token generation failed");
+      throw Exception("Failed to get WebRTC token: \${response.body}");
     }
   }
 }`
@@ -372,7 +517,7 @@ class AuraRTCService {
                     ) : (
                       <Copy className="w-3.5 h-3.5" />
                     )}
-                    <span>{copiedKey === "flutter-service" ? "Copied" : "Copy Dart Code"}</span>
+                    <span>{copiedKey === "flutter-service" ? "Copied" : "Copy Service"}</span>
                   </button>
                 </div>
                 <div className="rounded-xl bg-slate-950 p-4 font-mono text-xs text-emerald-400 overflow-x-auto">
@@ -381,8 +526,8 @@ class AuraRTCService {
 import 'package:http/http.dart' as http;
 
 class AuraRTCService {
-  // Use http://10.0.2.2:5001 for Android Emulator or your server domain
-  static const String apiUrl = "http://localhost:5001/api/v1/rtc/token";
+  // Public Render backend or your custom domain
+  static const String apiUrl = "https://video-saas-1-2ldd.onrender.com/api/v1/rtc/token";
   static const String appId = "YOUR_APP_ID";
   static const String appSecret = "YOUR_APP_SECRET";
 
@@ -392,26 +537,23 @@ class AuraRTCService {
   }) async {
     final response = await http.post(
       Uri.parse(apiUrl),
-      headers: {
-        "Content-Type": "application/json",
-        "x-app-id": appId,
-        "x-app-secret": appSecret,
-      },
+      headers: { "Content-Type": "application/json" },
       body: jsonEncode({
-        "roomName": roomName,
-        "identity": "user_\${DateTime.now().millisecondsSinceEpoch}",
-        "name": userName,
+        "appId": appId,
+        "appSecret": appSecret,
+        "roomId": roomName,
+        "participantName": userName,
       }),
     );
 
-    final data = jsonDecode(response.body);
-    if (data['success'] == true) {
+    if (response.statusCode == 200) {
+      final json = jsonDecode(response.body);
       return {
-        "token": data['data']['token'],
-        "serverUrl": data['data']['serverUrl'],
+        "token": json["data"]["token"],
+        "serverUrl": json["data"]["serverUrl"],
       };
     } else {
-      throw Exception(data['message'] ?? "Token generation failed");
+      throw Exception("Failed to get token: \${response.body}");
     }
   }
 }`}</code>
@@ -419,7 +561,7 @@ class AuraRTCService {
                 </div>
               </div>
 
-              {/* Step 4: VideoCallScreen Widget */}
+              {/* Step 4: Full Video Call Screen */}
               <div className="bg-white border border-slate-200/80 rounded-2xl p-6 shadow-sm space-y-3">
                 <div className="flex items-center justify-between">
                   <div>
@@ -448,6 +590,8 @@ class _VideoCallScreenState extends State<VideoCallScreen> {
   Room? _room;
   EventsListener<RoomEvent>? _listener;
   VideoTrack? _remoteVideoTrack;
+  bool _isMicMuted = false;
+  bool _isCamOff = false;
 
   @override
   void initState() {
@@ -457,44 +601,57 @@ class _VideoCallScreenState extends State<VideoCallScreen> {
 
   Future<void> _connectToRoom() async {
     try {
-      // 1. Fetch Token from AuraRTC Gateway
       final creds = await AuraRTCService.getCallToken(
         roomName: widget.roomName,
         userName: widget.userName,
       );
 
-      // 2. Instantiate LiveKit Room
-      final room = Room();
-      _listener = room.createListener();
+      final room = Room(
+        roomOptions: const RoomOptions(
+          adaptiveStream: true,
+          dynacast: true,
+          defaultCameraCaptureOptions: CameraCaptureOptions(
+            maxFrameRate: 30,
+            params: VideoParametersPresets.h720_169,
+          ),
+        ),
+      );
 
-      // Listen for remote tracks
-      _listener!.on<TrackSubscribedEvent>((event) {
-        if (event.track is VideoTrack) {
-          setState(() {
-            _remoteVideoTrack = event.track as VideoTrack;
-          });
-        }
-      });
+      final listener = room.createListener();
 
-      // 3. Connect to Media SFU
-      await room.connect(creds['serverUrl'], creds['token']);
+      listener
+        ..on<TrackSubscribedEvent>((event) {
+          if (event.track is VideoTrack) {
+            setState(() {
+              _remoteVideoTrack = event.track as VideoTrack;
+            });
+          }
+        })
+        ..on<TrackUnsubscribedEvent>((event) {
+          if (event.track is VideoTrack) {
+            setState(() {
+              _remoteVideoTrack = null;
+            });
+          }
+        });
 
-      // 4. Publish local Camera and Mic
+      await room.connect(creds["serverUrl"], creds["token"]);
       await room.localParticipant?.setCameraEnabled(true);
       await room.localParticipant?.setMicrophoneEnabled(true);
 
       setState(() {
         _room = room;
+        _listener = listener;
       });
     } catch (e) {
-      print("Call Error: \$e");
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Error: \$e")));
     }
   }
 
   @override
   void dispose() {
-    _room?.disconnect();
     _listener?.dispose();
+    _room?.disconnect();
     super.dispose();
   }
 
@@ -503,7 +660,7 @@ class _VideoCallScreenState extends State<VideoCallScreen> {
     if (_room == null) {
       return const Scaffold(
         backgroundColor: Colors.black,
-        body: Center(child: CircularProgressIndicator(color: Colors.green)),
+        body: Center(child: CircularProgressIndicator(color: Colors.emerald)),
       );
     }
 
@@ -513,7 +670,7 @@ class _VideoCallScreenState extends State<VideoCallScreen> {
       backgroundColor: Colors.black,
       body: Stack(
         children: [
-          // 1. Fullscreen Remote Video Feed
+          // Remote Participant Video
           if (_remoteVideoTrack != null)
             VideoTrackRenderer(_remoteVideoTrack!)
           else
@@ -521,29 +678,55 @@ class _VideoCallScreenState extends State<VideoCallScreen> {
               child: Text("Waiting for participant to join...", style: TextStyle(color: Colors.white70)),
             ),
 
-          // 2. Picture-in-Picture Local Video Feed
-          if (localTrack != null)
+          // Local Picture-in-Picture Video
+          if (localTrack != null && !_isCamOff)
             Positioned(
               right: 16,
-              top: 48,
-              width: 120,
+              top: 50,
+              width: 110,
               height: 160,
               child: ClipRRect(
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(16),
                 child: VideoTrackRenderer(localTrack),
               ),
             ),
 
-          // 3. Bottom End Call Button
+          // Floating Controls Bar
           Positioned(
-            bottom: 32,
-            left: 0,
-            right: 0,
-            child: Center(
-              child: FloatingActionButton(
-                backgroundColor: Colors.red,
-                onPressed: () => Navigator.pop(context),
-                child: const Icon(Icons.call_end, color: Colors.white),
+            bottom: 30,
+            left: 20,
+            right: 20,
+            child: Container(
+              padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+              decoration: BoxDecoration(
+                color: Colors.white.withOpacity(0.15),
+                borderRadius: BorderRadius.circular(24),
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  IconButton(
+                    icon: Icon(_isMicMuted ? Icons.mic_off : Icons.mic, color: Colors.white),
+                    onPressed: () async {
+                      final newVal = !_isMicMuted;
+                      await _room!.localParticipant?.setMicrophoneEnabled(!newVal);
+                      setState(() => _isMicMuted = newVal);
+                    },
+                  ),
+                  IconButton(
+                    icon: Icon(_isCamOff ? Icons.videocam_off : Icons.videocam, color: Colors.white),
+                    onPressed: () async {
+                      final newVal = !_isCamOff;
+                      await _room!.localParticipant?.setCameraEnabled(!newVal);
+                      setState(() => _isCamOff = newVal);
+                    },
+                  ),
+                  FloatingActionButton(
+                    backgroundColor: Colors.red,
+                    onPressed: () => Navigator.pop(context),
+                    child: const Icon(Icons.call_end, color: Colors.white),
+                  ),
+                ],
               ),
             ),
           ),
@@ -561,274 +744,169 @@ class _VideoCallScreenState extends State<VideoCallScreen> {
                     ) : (
                       <Copy className="w-3.5 h-3.5" />
                     )}
-                    <span>{copiedKey === "flutter-screen" ? "Copied" : "Copy Screen Code"}</span>
+                    <span>{copiedKey === "flutter-screen" ? "Copied" : "Copy Code"}</span>
                   </button>
                 </div>
-                <div className="rounded-xl bg-slate-950 p-4 font-mono text-xs text-emerald-400 overflow-x-auto max-h-[450px]">
+                <div className="rounded-xl bg-slate-950 p-4 font-mono text-xs text-emerald-400 overflow-x-auto max-h-[420px]">
                   <pre>
-                    <code>{`import 'package:flutter/material.dart';
-import 'package:livekit_client/livekit_client.dart';
-import 'aura_rtc_service.dart';
+                    <code>{`// Connect & Render Video in Flutter
+final room = Room(roomOptions: const RoomOptions(adaptiveStream: true, dynacast: true));
+final listener = room.createListener();
 
-class VideoCallScreen extends StatefulWidget {
-  final String roomName;
-  final String userName;
-
-  const VideoCallScreen({Key? key, required this.roomName, required this.userName}) : super(key: key);
-
-  @override
-  _VideoCallScreenState createState() => _VideoCallScreenState();
-}
-
-class _VideoCallScreenState extends State<VideoCallScreen> {
-  Room? _room;
-  EventsListener<RoomEvent>? _listener;
-  VideoTrack? _remoteVideoTrack;
-
-  @override
-  void initState() {
-    super.initState();
-    _connectToRoom();
+listener.on<TrackSubscribedEvent>((event) {
+  if (event.track is VideoTrack) {
+    setState(() => _remoteVideoTrack = event.track as VideoTrack);
   }
+});
 
-  Future<void> _connectToRoom() async {
-    try {
-      final creds = await AuraRTCService.getCallToken(
-        roomName: widget.roomName,
-        userName: widget.userName,
-      );
-
-      final room = Room();
-      _listener = room.createListener();
-
-      _listener!.on<TrackSubscribedEvent>((event) {
-        if (event.track is VideoTrack) {
-          setState(() {
-            _remoteVideoTrack = event.track as VideoTrack;
-          });
-        }
-      });
-
-      await room.connect(creds['serverUrl'], creds['token']);
-      await room.localParticipant?.setCameraEnabled(true);
-      await room.localParticipant?.setMicrophoneEnabled(true);
-
-      setState(() {
-        _room = room;
-      });
-    } catch (e) {
-      print("Call Error: \$e");
-    }
-  }
-
-  @override
-  void dispose() {
-    _room?.disconnect();
-    _listener?.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    if (_room == null) {
-      return const Scaffold(
-        backgroundColor: Colors.black,
-        body: Center(child: CircularProgressIndicator(color: Colors.green)),
-      );
-    }
-
-    final localTrack = _room!.localParticipant?.videoTrackPublications.firstOrNull?.track as VideoTrack?;
-
-    return Scaffold(
-      backgroundColor: Colors.black,
-      body: Stack(
-        children: [
-          // Remote Participant Video
-          if (_remoteVideoTrack != null)
-            VideoTrackRenderer(_remoteVideoTrack!)
-          else
-            const Center(child: Text("Waiting for participant...", style: TextStyle(color: Colors.white70))),
-
-          // Floating Local Camera Window
-          if (localTrack != null)
-            Positioned(
-              right: 16,
-              top: 48,
-              width: 120,
-              height: 160,
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(12),
-                child: VideoTrackRenderer(localTrack),
-              ),
-            ),
-
-          // Hang Up Floating Button
-          Positioned(
-            bottom: 32,
-            left: 0,
-            right: 0,
-            child: Center(
-              child: FloatingActionButton(
-                backgroundColor: Colors.red,
-                onPressed: () => Navigator.pop(context),
-                child: const Icon(Icons.call_end, color: Colors.white),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}`}</code>
+await room.connect(serverUrl, token);
+await room.localParticipant?.setCameraEnabled(true);
+await room.localParticipant?.setMicrophoneEnabled(true);`}</code>
                   </pre>
                 </div>
+              </div>
+
+              {/* Next step CTA */}
+              <div className="flex items-center justify-between p-5 rounded-2xl bg-indigo-50 border border-indigo-200">
+                <div className="space-y-0.5">
+                  <h4 className="font-bold text-sm text-indigo-900">Want to customize the Flutter UI?</h4>
+                  <p className="text-xs text-indigo-700">Learn how to change colors, add watermarks, and build 2x2 grids.</p>
+                </div>
+                <button
+                  onClick={() => setActiveSection("customize")}
+                  className="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold transition-colors"
+                >
+                  Customization Guide →
+                </button>
               </div>
             </div>
           )}
 
           {/* ============================================================= */}
-          {/* 2. REACT / NEXT.JS INTEGRATION GUIDE */}
+          {/* 2. REACT & NEXT.JS WEB SDK GUIDE */}
           {/* ============================================================= */}
           {activeSection === "react" && (
             <div className="space-y-8">
               <div className="bg-white border border-slate-200/80 rounded-3xl p-6 sm:p-8 shadow-sm space-y-3">
                 <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 text-emerald-800 text-xs font-semibold border border-emerald-200">
                   <Globe className="w-3.5 h-3.5 text-emerald-600" />
-                  <span>Web & Fullstack</span>
+                  <span>Web & Full-Stack</span>
                 </div>
                 <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight">
                   React & Next.js Web SDK Guide
                 </h2>
                 <p className="text-xs sm:text-sm text-slate-600 leading-relaxed max-w-3xl">
-                  Embed video conferencing into any modern React or Next.js web application with 5 lines of declarative component code.
+                  Easily embed video calling into React, Next.js (App or Pages router), or Remix using pre-built styled components or headless custom hooks.
                 </p>
               </div>
 
-              {/* Install NPM Package */}
+              {/* Step 1: Install packages */}
               <div className="bg-white border border-slate-200/80 rounded-2xl p-6 shadow-sm space-y-3">
-                <h3 className="text-base font-bold text-slate-900">1. Install WebRTC Packages</h3>
+                <h3 className="text-base font-bold text-slate-900">Step 1: Install Dependencies</h3>
                 <div className="rounded-xl bg-slate-950 p-4 font-mono text-xs text-emerald-400 overflow-x-auto">
-                  <code>npm install @livekit/components-react @livekit/components-styles livekit-client</code>
+                  <pre>
+                    <code>{`npm install @livekit/components-react @livekit/components-styles livekit-client`}</code>
+                  </pre>
                 </div>
               </div>
 
-              {/* React Component Code */}
+              {/* Step 2: Pre-Built UI Component */}
               <div className="bg-white border border-slate-200/80 rounded-2xl p-6 shadow-sm space-y-3">
                 <div className="flex items-center justify-between">
-                  <h3 className="text-base font-bold text-slate-900">2. Meeting Room Component (MeetingRoom.tsx)</h3>
+                  <div>
+                    <span className="text-xs font-bold text-emerald-600 uppercase font-mono">Option A</span>
+                    <h3 className="text-base font-bold text-slate-900">Instant Pre-Built Video Conference</h3>
+                  </div>
                   <button
                     onClick={() =>
                       copyCode(
-                        "react-comp",
+                        "react-prebuilt",
                         `"use client";
 
-import { useEffect, useState } from "react";
-import { LiveKitRoom, VideoConference } from "@livekit/components-react";
 import "@livekit/components-styles";
+import { LiveKitRoom, VideoConference } from "@livekit/components-react";
 
-export default function MeetingRoom({ roomId, userName }: { roomId: string; userName: string }) {
-  const [token, setToken] = useState("");
-
-  useEffect(() => {
-    async function getToken() {
-      const res = await fetch("http://localhost:5001/api/v1/rtc/token", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "x-app-id": "YOUR_APP_ID",
-          "x-app-secret": "YOUR_APP_SECRET",
-        },
-        body: JSON.stringify({
-          roomName: roomId,
-          identity: "user_" + Math.random().toString(36).substring(2, 6),
-          name: userName,
-        }),
-      });
-      const data = await res.json();
-      if (data.success) {
-        setToken(data.data.token);
-      }
-    }
-    getToken();
-  }, [roomId, userName]);
-
-  if (!token) return <div>Loading meeting room...</div>;
-
+export default function MeetingRoom({ token, serverUrl }: { token: string; serverUrl: string }) {
   return (
-    <LiveKitRoom
-      serverUrl="ws://127.0.0.1:7880"
-      token={token}
-      connect={true}
-      video={true}
-      audio={true}
-      data-lk-theme="default"
-      style={{ height: "100vh" }}
-    >
-      <VideoConference />
-    </LiveKitRoom>
+    <div className="h-screen w-screen">
+      <LiveKitRoom
+        video={true}
+        audio={true}
+        token={token}
+        serverUrl={serverUrl}
+        data-lk-theme="default"
+      >
+        <VideoConference />
+      </LiveKitRoom>
+    </div>
   );
 }`
                       )
                     }
                     className="p-1.5 rounded-lg border border-slate-200 hover:bg-slate-50 text-slate-600 text-xs flex items-center gap-1"
                   >
-                    {copiedKey === "react-comp" ? (
+                    {copiedKey === "react-prebuilt" ? (
                       <Check className="w-3.5 h-3.5 text-emerald-600" />
                     ) : (
                       <Copy className="w-3.5 h-3.5" />
                     )}
-                    <span>{copiedKey === "react-comp" ? "Copied" : "Copy React Code"}</span>
+                    <span>{copiedKey === "react-prebuilt" ? "Copied" : "Copy React Code"}</span>
                   </button>
                 </div>
-
-                <div className="rounded-xl bg-slate-950 p-4 font-mono text-xs text-emerald-400 overflow-x-auto max-h-[400px]">
+                <div className="rounded-xl bg-slate-950 p-4 font-mono text-xs text-emerald-400 overflow-x-auto">
                   <pre>
                     <code>{`"use client";
 
-import { useEffect, useState } from "react";
-import { LiveKitRoom, VideoConference } from "@livekit/components-react";
 import "@livekit/components-styles";
+import { LiveKitRoom, VideoConference } from "@livekit/components-react";
 
-export default function MeetingRoom({ roomId, userName }: { roomId: string; userName: string }) {
-  const [token, setToken] = useState("");
+export default function MeetingRoom({ token, serverUrl }: { token: string; serverUrl: string }) {
+  return (
+    <div className="h-screen w-screen">
+      <LiveKitRoom
+        video={true}
+        audio={true}
+        token={token}
+        serverUrl={serverUrl}
+        data-lk-theme="default"
+      >
+        <VideoConference />
+      </LiveKitRoom>
+    </div>
+  );
+}`}</code>
+                  </pre>
+                </div>
+              </div>
 
-  useEffect(() => {
-    async function getToken() {
-      const res = await fetch("http://localhost:5001/api/v1/rtc/token", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "x-app-id": "YOUR_APP_ID",
-          "x-app-secret": "YOUR_APP_SECRET",
-        },
-        body: JSON.stringify({
-          roomName: roomId,
-          identity: "user_" + Math.random().toString(36).substring(2, 6),
-          name: userName,
-        }),
-      });
-      const data = await res.json();
-      if (data.success) {
-        setToken(data.data.token);
-      }
-    }
-    getToken();
-  }, [roomId, userName]);
+              {/* Option B: Headless Custom UI */}
+              <div className="bg-white border border-slate-200/80 rounded-2xl p-6 shadow-sm space-y-3">
+                <div>
+                  <span className="text-xs font-bold text-indigo-600 uppercase font-mono">Option B</span>
+                  <h3 className="text-base font-bold text-slate-900">Completely Custom Headless UI (Hooks)</h3>
+                  <p className="text-xs text-slate-500">
+                    Use <code className="font-mono text-emerald-700">useTracks()</code> to render custom video tiles with your own Tailwind CSS.
+                  </p>
+                </div>
+                <div className="rounded-xl bg-slate-950 p-4 font-mono text-xs text-emerald-400 overflow-x-auto">
+                  <pre>
+                    <code>{`import { useTracks, VideoTrack } from "@livekit/components-react";
+import { Track } from "livekit-client";
 
-  if (!token) return <div>Connecting to AuraRTC SFU...</div>;
+function CustomVideoGrid() {
+  const tracks = useTracks([Track.Source.Camera, Track.Source.ScreenShare]);
 
   return (
-    <LiveKitRoom
-      serverUrl="ws://127.0.0.1:7880"
-      token={token}
-      connect={true}
-      video={true}
-      audio={true}
-      data-lk-theme="default"
-      style={{ height: "100vh" }}
-    >
-      <VideoConference />
-    </LiveKitRoom>
+    <div className="grid grid-cols-2 gap-4 p-4">
+      {tracks.map((trackRef) => (
+        <div key={trackRef.publication.trackSid} className="relative rounded-2xl overflow-hidden shadow-lg border border-slate-800">
+          <VideoTrack trackRef={trackRef} className="w-full h-full object-cover" />
+          <span className="absolute bottom-3 left-3 px-2 py-1 bg-black/60 text-white rounded text-xs font-bold">
+            {trackRef.participant.name || trackRef.participant.identity}
+          </span>
+        </div>
+      ))}
+    </div>
   );
 }`}</code>
                   </pre>
@@ -845,7 +923,7 @@ export default function MeetingRoom({ roomId, userName }: { roomId: string; user
               <div className="bg-white border border-slate-200/80 rounded-3xl p-6 sm:p-8 shadow-sm space-y-3">
                 <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 text-emerald-800 text-xs font-semibold border border-emerald-200">
                   <Server className="w-3.5 h-3.5 text-emerald-600" />
-                  <span>Server-to-Server</span>
+                  <span>Server-to-Server Gateway</span>
                 </div>
                 <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight">
                   Node.js / Express Backend Integration
@@ -869,17 +947,14 @@ app.post("/api/get-meeting-token", async (req, res) => {
   const { roomName, userId, userName } = req.body;
 
   try {
-    const gatewayRes = await fetch("http://localhost:5001/api/v1/rtc/token", {
+    const gatewayRes = await fetch("https://video-saas-1-2ldd.onrender.com/api/v1/rtc/token", {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "x-app-id": process.env.AURARTC_APP_ID,
-        "x-app-secret": process.env.AURARTC_APP_SECRET,
-      },
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        roomName,
-        identity: userId,
-        name: userName,
+        appId: process.env.AURARTC_APP_ID,
+        appSecret: process.env.AURARTC_APP_SECRET,
+        roomId: roomName,
+        participantName: userName || userId,
       }),
     });
 
@@ -898,7 +973,344 @@ app.listen(3000, () => console.log("Server listening on port 3000"));`}</code>
           )}
 
           {/* ============================================================= */}
-          {/* 4. REST API REFERENCE */}
+          {/* 4. UI CUSTOMIZATION & THEMING MASTERCLASS */}
+          {/* ============================================================= */}
+          {activeSection === "customize" && (
+            <div className="space-y-8">
+              <div className="bg-white border border-slate-200/80 rounded-3xl p-6 sm:p-8 shadow-sm space-y-3">
+                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-indigo-50 text-indigo-800 text-xs font-semibold border border-indigo-200">
+                  <Palette className="w-3.5 h-3.5 text-indigo-600" />
+                  <span>Theming & Brand White-Labeling</span>
+                </div>
+                <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight">
+                  How To Customize Video Call UIs
+                </h2>
+                <p className="text-xs sm:text-sm text-slate-600 leading-relaxed max-w-3xl">
+                  Step-by-step instructions on customizing UI layouts, brand primary colors, floating control bars, participant grids, and logo watermarks in Flutter and React.
+                </p>
+              </div>
+
+              {/* 1. Flutter Custom Floating Control Bar */}
+              <div className="bg-white border border-slate-200/80 rounded-2xl p-6 shadow-sm space-y-3">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <span className="text-xs font-bold text-emerald-600 uppercase font-mono">Flutter Customization</span>
+                    <h3 className="text-base font-bold text-slate-900">Custom Floating Glassmorphic Action Bar</h3>
+                  </div>
+                  <button
+                    onClick={() =>
+                      copyCode(
+                        "flutter-controls",
+                        `Widget buildCustomControls({
+  required bool isMuted,
+  required bool isCamOff,
+  required VoidCallback onToggleMic,
+  required VoidCallback onToggleCam,
+  required VoidCallback onSwitchCamera,
+  required VoidCallback onEndCall,
+}) {
+  return Container(
+    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+    decoration: BoxDecoration(
+      color: Colors.black.withOpacity(0.4),
+      borderRadius: BorderRadius.circular(30),
+      border: Border.all(color: Colors.white.withOpacity(0.15)),
+      boxShadow: [
+        BoxShadow(
+          color: Colors.black.withOpacity(0.3),
+          blurRadius: 15,
+          offset: const Offset(0, 5),
+        ),
+      ],
+    ),
+    child: Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        // Mic Toggle
+        IconButton(
+          icon: Icon(isMuted ? Icons.mic_off : Icons.mic, color: isMuted ? Colors.redAccent : Colors.white),
+          onPressed: onToggleMic,
+        ),
+        const SizedBox(width: 8),
+        // Camera Toggle
+        IconButton(
+          icon: Icon(isCamOff ? Icons.videocam_off : Icons.videocam, color: isCamOff ? Colors.redAccent : Colors.white),
+          onPressed: onToggleCam,
+        ),
+        const SizedBox(width: 8),
+        // Flip Camera
+        IconButton(
+          icon: const Icon(Icons.flip_camera_ios, color: Colors.white),
+          onPressed: onSwitchCamera,
+        ),
+        const SizedBox(width: 16),
+        // End Call Pill
+        GestureDetector(
+          onTap: onEndCall,
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+            decoration: BoxDecoration(
+              color: Colors.redAccent,
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: const Row(
+              children: [
+                Icon(Icons.call_end, color: Colors.white, size: 18),
+                SizedBox(width: 6),
+                Text("Leave", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 13)),
+              ],
+            ),
+          ),
+        ),
+      ],
+    ),
+  );
+}`
+                      )
+                    }
+                    className="p-1.5 rounded-lg border border-slate-200 hover:bg-slate-50 text-slate-600 text-xs flex items-center gap-1"
+                  >
+                    {copiedKey === "flutter-controls" ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
+                    <span>{copiedKey === "flutter-controls" ? "Copied" : "Copy Controls"}</span>
+                  </button>
+                </div>
+                <p className="text-xs text-slate-500">
+                  Replace the default controls with a sleek glassmorphic pill bar with front/rear camera flip and custom colored icons:
+                </p>
+                <div className="rounded-xl bg-slate-950 p-4 font-mono text-xs text-emerald-400 overflow-x-auto max-h-[350px]">
+                  <pre>
+                    <code>{`// Custom Glassmorphic Controls Bar in Flutter
+Widget buildCustomControls({
+  required bool isMuted,
+  required bool isCamOff,
+  required VoidCallback onToggleMic,
+  required VoidCallback onToggleCam,
+  required VoidCallback onSwitchCamera,
+  required VoidCallback onEndCall,
+}) {
+  return Container(
+    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+    decoration: BoxDecoration(
+      color: Colors.black.withOpacity(0.4),
+      borderRadius: BorderRadius.circular(30),
+      border: Border.all(color: Colors.white.withOpacity(0.15)),
+    ),
+    child: Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        IconButton(icon: Icon(isMuted ? Icons.mic_off : Icons.mic), onPressed: onToggleMic),
+        IconButton(icon: Icon(isCamOff ? Icons.videocam_off : Icons.videocam), onPressed: onToggleCam),
+        IconButton(icon: const Icon(Icons.flip_camera_ios), onPressed: onSwitchCamera),
+        // End Call
+        ElevatedButton(style: ElevatedButton.styleFrom(backgroundColor: Colors.red), onPressed: onEndCall, child: const Text("Leave")),
+      ],
+    ),
+  );
+}`}</code>
+                  </pre>
+                </div>
+              </div>
+
+              {/* 2. Flutter Custom Video Grid */}
+              <div className="bg-white border border-slate-200/80 rounded-2xl p-6 shadow-sm space-y-3">
+                <span className="text-xs font-bold text-emerald-600 uppercase font-mono">Flutter Layout</span>
+                <h3 className="text-base font-bold text-slate-900">Custom Multi-Party 2x2 Grid or Speaker Spotlight</h3>
+                <p className="text-xs text-slate-500">
+                  Render participants in an adaptive responsive grid with rounded corners and live speaking indicators:
+                </p>
+                <div className="rounded-xl bg-slate-950 p-4 font-mono text-xs text-emerald-400 overflow-x-auto">
+                  <pre>
+                    <code>{`// Dynamic Participant Grid with Speaking Glow Indicator
+Widget buildParticipantGrid(List<Participant> participants) {
+  return GridView.builder(
+    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+      crossAxisCount: participants.length <= 2 ? 1 : 2,
+      childAspectRatio: 1.0,
+      crossAxisSpacing: 8,
+      mainAxisSpacing: 8,
+    ),
+    itemCount: participants.length,
+    itemBuilder: (context, index) {
+      final p = participants[index];
+      final videoTrack = p.videoTrackPublications.firstOrNull?.track as VideoTrack?;
+
+      return Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(
+            // Glowing border when participant is talking!
+            color: p.isSpeaking ? Colors.emerald : Colors.white12,
+            width: p.isSpeaking ? 3 : 1,
+          ),
+        ),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(15),
+          child: videoTrack != null
+              ? VideoTrackRenderer(videoTrack)
+              : Center(child: Text(p.name, style: const TextStyle(color: Colors.white))),
+        ),
+      );
+    },
+  );
+}`}</code>
+                  </pre>
+                </div>
+              </div>
+
+              {/* 3. React / Web Theming Overrides */}
+              <div className="bg-white border border-slate-200/80 rounded-2xl p-6 shadow-sm space-y-3">
+                <span className="text-xs font-bold text-indigo-600 uppercase font-mono">Web / React Theming</span>
+                <h3 className="text-base font-bold text-slate-900">CSS Variable Theming Overrides</h3>
+                <p className="text-xs text-slate-500">
+                  Override default LiveKit styles by adding these custom CSS variables to your <code className="font-mono">globals.css</code>:
+                </p>
+                <div className="rounded-xl bg-slate-950 p-4 font-mono text-xs text-emerald-400 overflow-x-auto">
+                  <pre>
+                    <code>{`/* Custom White-Label Theme for LiveKit Web Components */
+:root {
+  --lk-bg: #0b0f19;                     /* Meeting room backdrop */
+  --lk-accent-bg: #10b981;              /* Primary brand color (Emerald) */
+  --lk-control-bar-bg: rgba(15, 23, 42, 0.75); /* Glassmorphic dock */
+  --lk-border-radius: 16px;             /* Video tile corner rounding */
+  --lk-participant-border-radius: 14px;
+}
+
+/* Custom Watermark Overlay */
+.lk-video-conference::after {
+  content: "YOUR BRAND LOGO";
+  position: absolute;
+  top: 1.5rem;
+  left: 1.5rem;
+  font-weight: 800;
+  color: rgba(255, 255, 255, 0.7);
+  pointer-events: none;
+}`}</code>
+                  </pre>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* ============================================================= */}
+          {/* 5. INTERACTIVE LIVE TOKEN GENERATOR BENCH */}
+          {/* ============================================================= */}
+          {activeSection === "token-bench" && (
+            <div className="space-y-8">
+              <div className="bg-white border border-slate-200/80 rounded-3xl p-6 sm:p-8 shadow-sm space-y-3">
+                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-50 text-amber-800 text-xs font-semibold border border-amber-200">
+                  <Zap className="w-3.5 h-3.5 text-amber-600" />
+                  <span>Real-Time Live Testing</span>
+                </div>
+                <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight">
+                  Interactive Live API Token Bench
+                </h2>
+                <p className="text-xs sm:text-sm text-slate-600 leading-relaxed max-w-3xl">
+                  Test your real credentials or execute with pre-filled demo keys to generate signed WebRTC JWT tokens directly against our live production API server.
+                </p>
+              </div>
+
+              <div className="bg-slate-900 border border-slate-800 rounded-3xl p-6 sm:p-8 text-white shadow-xl space-y-5">
+                <div className="flex items-center justify-between border-b border-slate-800 pb-4">
+                  <div className="flex items-center gap-2">
+                    <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse" />
+                    <span className="font-bold text-sm text-emerald-400">Endpoint: POST /api/v1/rtc/token</span>
+                  </div>
+                  <span className="text-[11px] font-mono text-slate-400">Target: video-saas-1-2ldd.onrender.com</span>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+                  <div>
+                    <label className="text-[11px] text-slate-400 font-mono">App ID</label>
+                    <input
+                      type="text"
+                      value={testAppId}
+                      onChange={(e) => setTestAppId(e.target.value)}
+                      className="w-full mt-1.5 px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 font-mono text-emerald-400 focus:outline-none focus:border-emerald-500"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-[11px] text-slate-400 font-mono">App Secret</label>
+                    <input
+                      type="password"
+                      value={testAppSecret}
+                      onChange={(e) => setTestAppSecret(e.target.value)}
+                      className="w-full mt-1.5 px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 font-mono text-emerald-400 focus:outline-none focus:border-emerald-500"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-[11px] text-slate-400 font-mono">Room ID / Name</label>
+                    <input
+                      type="text"
+                      value={testRoom}
+                      onChange={(e) => setTestRoom(e.target.value)}
+                      className="w-full mt-1.5 px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 font-mono text-emerald-400 focus:outline-none focus:border-emerald-500"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-[11px] text-slate-400 font-mono">Participant Name</label>
+                    <input
+                      type="text"
+                      value={testUser}
+                      onChange={(e) => setTestUser(e.target.value)}
+                      className="w-full mt-1.5 px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 font-mono text-emerald-400 focus:outline-none focus:border-emerald-500"
+                    />
+                  </div>
+                </div>
+
+                <button
+                  onClick={handleTestToken}
+                  disabled={isTestingToken}
+                  className="w-full py-3 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 font-bold text-xs text-white shadow-md shadow-emerald-600/25 transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+                >
+                  {isTestingToken ? (
+                    <span>Minting Live Token on Render Gateway...</span>
+                  ) : (
+                    <>
+                      <Zap className="w-3.5 h-3.5" />
+                      <span>Execute POST /api/v1/rtc/token</span>
+                    </>
+                  )}
+                </button>
+
+                {testError && (
+                  <div className="p-4 rounded-xl bg-rose-950/70 border border-rose-800 text-rose-300 text-xs">
+                    ❌ <strong>Execution Error:</strong> {testError}
+                  </div>
+                )}
+
+                {testResult && (
+                  <div className="space-y-3 pt-2">
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-bold text-emerald-400">
+                        ✅ Token Successfully Minted (HTTP 200 OK)
+                      </span>
+                      <button
+                        onClick={() => copyCode("live-token", testResult.data?.token || "")}
+                        className="px-2.5 py-1 rounded bg-slate-800 hover:bg-slate-700 text-xs text-slate-300 flex items-center gap-1"
+                      >
+                        {copiedKey === "live-token" ? <Check className="w-3 h-3 text-emerald-400" /> : <Copy className="w-3 h-3" />}
+                        <span>Copy JWT</span>
+                      </button>
+                    </div>
+
+                    <div className="p-4 rounded-xl bg-slate-950 border border-slate-800 font-mono text-xs text-emerald-400 overflow-x-auto space-y-2">
+                      <div>
+                        <span className="text-slate-500">// WebSocket SFU Server URL</span>
+                        <div className="text-slate-200">{testResult.data?.serverUrl}</div>
+                      </div>
+                      <div>
+                        <span className="text-slate-500">// Signed Access Token (JWT)</span>
+                        <div className="break-all text-emerald-400">{testResult.data?.token}</div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* ============================================================= */}
+          {/* 6. REST API REFERENCE */}
           {/* ============================================================= */}
           {activeSection === "api" && (
             <div className="space-y-8">
@@ -911,159 +1323,57 @@ app.listen(3000, () => console.log("Server listening on port 3000"));`}</code>
                   AuraRTC Gateway REST API
                 </h2>
                 <p className="text-xs sm:text-sm text-slate-600 leading-relaxed max-w-3xl">
-                  Authenticate requests via HTTP headers: <code className="font-mono bg-slate-100 px-1.5 py-0.5 rounded text-slate-800">x-app-id</code> and <code className="font-mono bg-slate-100 px-1.5 py-0.5 rounded text-slate-800">x-app-secret</code> (or in request body).
+                  Endpoints to mint room access tokens, list active conferences, and check system health.
                 </p>
-              </div>
-
-              {/* Interactive Token Generator Console */}
-              <div className="bg-slate-900 border border-slate-800 rounded-3xl p-6 text-white shadow-xl space-y-4">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <div className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse" />
-                    <span className="font-bold text-sm text-emerald-400">Interactive Live API Console</span>
-                  </div>
-                  <span className="text-[10px] font-mono text-slate-400">Connected to Live Render Gateway</span>
-                </div>
-                <p className="text-xs text-slate-400">
-                  Test your real App credentials or use our pre-filled live demo credentials to generate a valid WebRTC token in 1 click:
-                </p>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
-                  <div>
-                    <label className="text-[11px] text-slate-400 font-mono">App ID</label>
-                    <input
-                      type="text"
-                      value={testAppId}
-                      onChange={(e) => setTestAppId(e.target.value)}
-                      className="w-full mt-1 px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 font-mono text-emerald-400 focus:outline-none focus:border-emerald-500"
-                    />
-                  </div>
-                  <div>
-                    <label className="text-[11px] text-slate-400 font-mono">App Secret</label>
-                    <input
-                      type="password"
-                      value={testAppSecret}
-                      onChange={(e) => setTestAppSecret(e.target.value)}
-                      className="w-full mt-1 px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 font-mono text-emerald-400 focus:outline-none focus:border-emerald-500"
-                    />
-                  </div>
-                  <div>
-                    <label className="text-[11px] text-slate-400 font-mono">Room Name / ID</label>
-                    <input
-                      type="text"
-                      value={testRoom}
-                      onChange={(e) => setTestRoom(e.target.value)}
-                      className="w-full mt-1 px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 font-mono text-slate-200 focus:outline-none focus:border-emerald-500"
-                    />
-                  </div>
-                  <div>
-                    <label className="text-[11px] text-slate-400 font-mono">Participant Name</label>
-                    <input
-                      type="text"
-                      value={testUser}
-                      onChange={(e) => setTestUser(e.target.value)}
-                      className="w-full mt-1 px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 font-mono text-slate-200 focus:outline-none focus:border-emerald-500"
-                    />
-                  </div>
-                </div>
-
-                <button
-                  onClick={handleTestToken}
-                  disabled={isTestingToken}
-                  className="w-full py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs transition-colors flex items-center justify-center gap-2 shadow-lg disabled:opacity-50"
-                >
-                  {isTestingToken ? (
-                    <>
-                      <div className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                      <span>Minting Signed LiveKit Token...</span>
-                    </>
-                  ) : (
-                    <>
-                      <Zap className="w-3.5 h-3.5 text-amber-300" />
-                      <span>Execute POST /api/v1/rtc/token</span>
-                    </>
-                  )}
-                </button>
-
-                {testError && (
-                  <div className="p-3 rounded-xl bg-red-950/60 border border-red-800 text-red-300 text-xs font-mono">
-                    ❌ Error: {testError}
-                  </div>
-                )}
-
-                {testResult && (
-                  <div className="p-4 rounded-xl bg-slate-950 border border-emerald-900 text-xs font-mono space-y-2">
-                    <div className="flex items-center justify-between text-emerald-400 font-bold">
-                      <span>HTTP 200 OK — Token Generated Successfully!</span>
-                      <button
-                        onClick={() => copyCode("test-token", testResult.token)}
-                        className="text-[10px] bg-slate-800 px-2 py-1 rounded hover:bg-slate-700 text-white flex items-center gap-1"
-                      >
-                        {copiedKey === "test-token" ? <Check className="w-3 h-3 text-emerald-400" /> : <Copy className="w-3 h-3" />}
-                        <span>Copy JWT</span>
-                      </button>
-                    </div>
-                    <div className="text-[11px] text-slate-400 break-all bg-slate-900/80 p-2.5 rounded-lg max-h-24 overflow-y-auto">
-                      {testResult.token}
-                    </div>
-                    <div className="text-[11px] text-slate-400">
-                      WebSocket Server URL: <span className="text-emerald-400">{testResult.wsUrl || testResult.serverUrl}</span>
-                    </div>
-                  </div>
-                )}
               </div>
 
               {/* Endpoint 1 */}
-              <div className="bg-white border border-slate-200/80 rounded-2xl p-6 shadow-sm space-y-4">
+              <div className="bg-white border border-slate-200/80 rounded-2xl p-6 shadow-sm space-y-3">
                 <div className="flex items-center gap-2">
-                  <span className="px-2 py-0.5 rounded text-xs font-mono font-bold bg-emerald-100 text-emerald-800">
+                  <span className="px-2.5 py-1 rounded-md bg-emerald-100 text-emerald-800 font-mono font-bold text-xs">
                     POST
                   </span>
-                  <span className="font-mono text-sm font-bold text-slate-900">
-                    /api/v1/rtc/token
-                  </span>
+                  <code className="text-xs font-mono font-bold text-slate-900">/api/v1/rtc/token</code>
                 </div>
                 <p className="text-xs text-slate-600">
-                  Generates an authorized WebRTC room join token and decrements usage from the project quota.
+                  Mints an authenticated room access token with specified publish and subscribe permissions.
                 </p>
-
-                <div className="text-xs font-bold text-slate-700">Headers:</div>
-                <div className="rounded-xl bg-slate-950 p-3 font-mono text-xs text-slate-300">
-                  x-app-id: string (Required)<br />
-                  x-app-secret: string (Required)<br />
-                  Content-Type: application/json
+                <div className="rounded-xl bg-slate-950 p-4 font-mono text-xs text-emerald-400 overflow-x-auto">
+                  <pre>
+                    <code>{`curl -X POST https://video-saas-1-2ldd.onrender.com/api/v1/rtc/token \\
+  -H "Content-Type: application/json" \\
+  -d '{
+    "appId": "YOUR_APP_ID",
+    "appSecret": "YOUR_APP_SECRET",
+    "roomId": "conference-alpha",
+    "participantName": "Alice"
+  }'`}</code>
+                  </pre>
                 </div>
+              </div>
 
-                <div className="text-xs font-bold text-slate-700 pt-1">Request Body (JSON):</div>
-                <div className="rounded-xl bg-slate-950 p-3 font-mono text-xs text-emerald-400">
-                  {`{
-  "roomName": "boardroom-alpha",      // String (Required)
-  "identity": "user_unique_123",      // String (Required)
-  "name": "Abhishek",                 // String (Optional)
-  "canPublish": true,                 // Boolean (Default: true)
-  "canSubscribe": true                // Boolean (Default: true)
-}`}
+              {/* Endpoint 2 */}
+              <div className="bg-white border border-slate-200/80 rounded-2xl p-6 shadow-sm space-y-3">
+                <div className="flex items-center gap-2">
+                  <span className="px-2.5 py-1 rounded-md bg-sky-100 text-sky-800 font-mono font-bold text-xs">
+                    GET
+                  </span>
+                  <code className="text-xs font-mono font-bold text-slate-900">/health</code>
                 </div>
-
-                <div className="text-xs font-bold text-slate-700 pt-1">Response (200 OK):</div>
-                <div className="rounded-xl bg-slate-950 p-3 font-mono text-xs text-emerald-400">
-                  {`{
-  "success": true,
-  "data": {
-    "token": "eyJhbGciOiJIUzI1NiJ9...",
-    "serverUrl": "ws://127.0.0.1:7880",
-    "roomName": "boardroom-alpha",
-    "identity": "user_unique_123",
-    "expiresIn": "6h"
-  }
-}`}
+                <p className="text-xs text-slate-600">
+                  Returns live status of the Node.js API process, MongoDB database connectivity, and LiveKit Cloud gateway.
+                </p>
+                <div className="rounded-xl bg-slate-950 p-4 font-mono text-xs text-emerald-400 overflow-x-auto">
+                  <pre>
+                    <code>{`curl -X GET https://video-saas-1-2ldd.onrender.com/health`}</code>
+                  </pre>
                 </div>
               </div>
             </div>
           )}
 
           {/* ============================================================= */}
-          {/* 5. 100% FREE HOSTING GUIDE (NO CREDIT CARD REQUIRED) */}
+          {/* 7. 100% FREE HOSTING (NO CARD REQUIRED) */}
           {/* ============================================================= */}
           {activeSection === "free-hosting" && (
             <div className="space-y-8">
@@ -1076,132 +1386,29 @@ app.listen(3000, () => console.log("Server listening on port 3000"));`}</code>
                   Deploy AuraRTC SaaS 100% Free (No Credit Card Ever)
                 </h2>
                 <p className="text-xs sm:text-sm text-slate-600 leading-relaxed max-w-3xl">
-                  Oracle Cloud asks for international credit cards and often rejects Indian cards. Here is the verified <strong>Zero Credit Card Stack</strong> to host your entire video calling platform 100% free forever.
+                  Here is the verified <strong>Zero Credit Card Stack</strong> to host your entire video calling platform 100% free forever.
                 </p>
               </div>
 
-              {/* Free Stack Matrix Table */}
-              <div className="bg-white border border-slate-200/80 rounded-2xl overflow-hidden shadow-sm">
-                <div className="px-6 py-4 border-b border-slate-200 bg-slate-50/70 font-bold text-sm text-slate-900">
-                  The Zero-Card Production Stack
-                </div>
-                <div className="overflow-x-auto">
-                  <table className="w-full text-left text-xs text-slate-700">
-                    <thead className="bg-slate-100/70 text-[11px] uppercase text-slate-500 font-mono tracking-wider">
-                      <tr>
-                        <th className="px-6 py-3">Layer</th>
-                        <th className="px-6 py-3">Free Provider</th>
-                        <th className="px-6 py-3">Credit Card?</th>
-                        <th className="px-6 py-3">Free Allowance</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-slate-100 font-sans">
-                      <tr className="hover:bg-slate-50/80">
-                        <td className="px-6 py-4 font-bold text-slate-900">Database</td>
-                        <td className="px-6 py-4 font-mono text-emerald-600 font-bold">MongoDB Atlas M0</td>
-                        <td className="px-6 py-4 font-bold text-emerald-700 bg-emerald-50/50">NO (Zero Card)</td>
-                        <td className="px-6 py-4">512MB storage, automated backups, free forever</td>
-                      </tr>
-                      <tr className="hover:bg-slate-50/80">
-                        <td className="px-6 py-4 font-bold text-slate-900">Frontend Web UI</td>
-                        <td className="px-6 py-4 font-mono text-emerald-600 font-bold">Vercel</td>
-                        <td className="px-6 py-4 font-bold text-emerald-700 bg-emerald-50/50">NO (Zero Card)</td>
-                        <td className="px-6 py-4">100 GB bandwidth, unlimited deployments, custom domain</td>
-                      </tr>
-                      <tr className="hover:bg-slate-50/80">
-                        <td className="px-6 py-4 font-bold text-slate-900">Backend API Gateway</td>
-                        <td className="px-6 py-4 font-mono text-emerald-600 font-bold">Render.com / Koyeb</td>
-                        <td className="px-6 py-4 font-bold text-emerald-700 bg-emerald-50/50">NO (Zero Card)</td>
-                        <td className="px-6 py-4">750 free instance hours / month, automatic HTTPS</td>
-                      </tr>
-                      <tr className="hover:bg-slate-50/80">
-                        <td className="px-6 py-4 font-bold text-slate-900">LiveKit Media SFU</td>
-                        <td className="px-6 py-4 font-mono text-emerald-600 font-bold">LiveKit Cloud Free Tier</td>
-                        <td className="px-6 py-4 font-bold text-emerald-700 bg-emerald-50/50">NO (Zero Card)</td>
-                        <td className="px-6 py-4">50 GB monthly bandwidth, up to 100 concurrent callers</td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-
-              {/* Step-by-Step Hosting Guide */}
-              <div className="space-y-4">
-                <h3 className="text-lg font-bold text-slate-900">How To Setup in 4 Steps:</h3>
-
-                {/* Step 1 */}
-                <div className="bg-white border border-slate-200/80 rounded-2xl p-6 shadow-sm space-y-2">
-                  <div className="flex items-center gap-2">
-                    <span className="w-6 h-6 rounded-full bg-emerald-600 text-white font-bold text-xs flex items-center justify-center">1</span>
-                    <h4 className="font-bold text-sm text-slate-900">Get Free LiveKit Cloud SFU (No Card)</h4>
+              <div className="bg-white border border-slate-200/80 rounded-2xl p-6 shadow-sm space-y-3">
+                <h4 className="font-bold text-sm text-slate-900">The 4 Zero-Card Production Building Blocks:</h4>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+                  <div className="p-4 rounded-xl bg-slate-50 border border-slate-200/80 space-y-1">
+                    <span className="text-xs font-bold text-slate-900">1. Database: MongoDB Atlas (M0 Tier)</span>
+                    <p className="text-xs text-slate-600">512MB storage, automated daily backups, free forever without entering any card info.</p>
                   </div>
-                  <p className="text-xs text-slate-600 leading-relaxed">
-                    1. Go to <a href="https://cloud.livekit.io" target="_blank" rel="noreferrer" className="text-emerald-600 font-semibold underline">cloud.livekit.io</a> and click <strong>"Continue with GitHub"</strong> (zero payment info required).<br />
-                    2. Create a project. LiveKit immediately gives you:
-                  </p>
-                  <div className="rounded-xl bg-slate-950 p-3 font-mono text-xs text-emerald-400">
-                    LIVEKIT_URL=wss://your-project.livekit.cloud<br />
-                    LIVEKIT_API_KEY=APIxxxxxxxxx<br />
-                    LIVEKIT_API_SECRET=secxxxxxxxxxxxxxxxxxxx
+                  <div className="p-4 rounded-xl bg-slate-50 border border-slate-200/80 space-y-1">
+                    <span className="text-xs font-bold text-slate-900">2. Backend API: Render.com</span>
+                    <p className="text-xs text-slate-600">750 free hours/month, automatic HTTPS, connects to this GitHub repository directly.</p>
                   </div>
-                  <p className="text-xs text-slate-500">
-                    This gives you high-speed global WebRTC edge servers with sub-50ms latency across India and the globe without hosting any server binary yourself!
-                  </p>
-                </div>
-
-                {/* Step 2 */}
-                <div className="bg-white border border-slate-200/80 rounded-2xl p-6 shadow-sm space-y-2">
-                  <div className="flex items-center gap-2">
-                    <span className="w-6 h-6 rounded-full bg-emerald-600 text-white font-bold text-xs flex items-center justify-center">2</span>
-                    <h4 className="font-bold text-sm text-slate-900">Deploy Backend API on Render.com (No Card)</h4>
+                  <div className="p-4 rounded-xl bg-slate-50 border border-slate-200/80 space-y-1">
+                    <span className="text-xs font-bold text-slate-900">3. Media SFU: LiveKit Cloud Free Tier</span>
+                    <p className="text-xs text-slate-600">Sign in with GitHub. 50 GB monthly bandwidth, up to 100 concurrent callers, zero card needed.</p>
                   </div>
-                  <p className="text-xs text-slate-600 leading-relaxed">
-                    1. Sign up on <a href="https://render.com" target="_blank" rel="noreferrer" className="text-emerald-600 font-semibold underline">render.com</a> with your GitHub account.<br />
-                    2. Click <strong>"New Web Service"</strong> ➔ Select this GitHub repo ➔ Root directory: <code className="font-mono bg-slate-100 px-1">apps/api</code>.<br />
-                    3. Add these Environment Variables:
-                  </p>
-                  <div className="rounded-xl bg-slate-950 p-3 font-mono text-xs text-slate-300">
-                    PORT=5001<br />
-                    MONGODB_URI=mongodb+srv://developerabhishek0929_db_user:...@cluster0.2m7c5z8.mongodb.net/omnirtc<br />
-                    LIVEKIT_URL=wss://your-project.livekit.cloud<br />
-                    LIVEKIT_API_KEY=your_key_from_step_1<br />
-                    LIVEKIT_API_SECRET=your_secret_from_step_1<br />
-                    JWT_SECRET=super_secret_production_key_1234
+                  <div className="p-4 rounded-xl bg-slate-50 border border-slate-200/80 space-y-1">
+                    <span className="text-xs font-bold text-slate-900">4. Web App: Vercel</span>
+                    <p className="text-xs text-slate-600">Automatic Next.js CI/CD, global edge CDN, unlimited deployments without card.</p>
                   </div>
-                  <p className="text-xs text-slate-500">
-                    Render gives you a free live URL: <code className="font-mono text-emerald-600">https://aurartc-api.onrender.com</code>.
-                  </p>
-                </div>
-
-                {/* Step 3 */}
-                <div className="bg-white border border-slate-200/80 rounded-2xl p-6 shadow-sm space-y-2">
-                  <div className="flex items-center gap-2">
-                    <span className="w-6 h-6 rounded-full bg-emerald-600 text-white font-bold text-xs flex items-center justify-center">3</span>
-                    <h4 className="font-bold text-sm text-slate-900">Deploy Frontend Web App on Vercel (No Card)</h4>
-                  </div>
-                  <p className="text-xs text-slate-600 leading-relaxed">
-                    1. Go to <a href="https://vercel.com" target="_blank" rel="noreferrer" className="text-emerald-600 font-semibold underline">vercel.com</a> and sign in with GitHub.<br />
-                    2. Import this repository ➔ Set root directory to <code className="font-mono bg-slate-100 px-1">apps/web</code>.<br />
-                    3. Click <strong>Deploy</strong>. Vercel automatically builds and hosts the Next.js app on a global CDN with free HTTPS!
-                  </p>
-                </div>
-
-                {/* Option 2: Cloudflare Tunnel */}
-                <div className="bg-slate-50 border border-slate-200/80 rounded-2xl p-6 space-y-2">
-                  <h4 className="font-bold text-sm text-slate-900 flex items-center gap-1.5">
-                    <Cpu className="w-4 h-4 text-emerald-600" />
-                    Alternative: Self-Host on your own Laptop with Free Cloudflare Tunnel
-                  </h4>
-                  <p className="text-xs text-slate-600 leading-relaxed">
-                    If you want to run the LiveKit binary on your own Mac/PC and expose it to the public internet for free without opening router ports or paying anything:
-                  </p>
-                  <div className="rounded-xl bg-slate-950 p-3 font-mono text-xs text-emerald-400">
-                    brew install cloudflare/cloudflare/cloudflared<br />
-                    cloudflared tunnel --url http://localhost:7880
-                  </div>
-                  <p className="text-xs text-slate-500">
-                    Cloudflare gives you a free HTTPS/WSS URL (e.g. <code className="font-mono">https://xyz.trycloudflare.com</code>) that directly routes into your local LiveKit server!
-                  </p>
                 </div>
               </div>
             </div>
@@ -1209,5 +1416,19 @@ app.listen(3000, () => console.log("Server listening on port 3000"));`}</code>
         </main>
       </div>
     </div>
+  );
+}
+
+export default function DocsPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen pt-28 text-center text-slate-500 font-mono text-xs">
+          Loading Developer Documentation...
+        </div>
+      }
+    >
+      <DocsContent />
+    </Suspense>
   );
 }
